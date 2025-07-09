@@ -1,35 +1,23 @@
 
 'use client';
 
-import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { Skeleton } from '@/components/ui/skeleton';
 import PlantSearch from '@/components/plant-search';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Camera } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useAuth } from '@/hooks/use-auth.tsx';
+import { Skeleton } from '@/components/ui/skeleton';
 
 export default function Home() {
-  const router = useRouter();
-  const [isClient, setIsClient] = useState(false);
-
-  useEffect(() => {
-    setIsClient(true);
-    if (typeof window !== 'undefined') {
-      const hasSeenWelcome = localStorage.getItem('hasSeenWelcome');
-      if (!hasSeenWelcome) {
-        router.replace('/welcome');
-      }
-    }
-  }, [router]);
-
-  if (!isClient) {
-    return (
+  const { loading } = useAuth();
+  
+  if (loading) {
+     return (
       <main className="flex-1">
         <div className="container px-4 md:px-6 py-12">
-            <Skeleton className="h-screen w-full" />
+            <Skeleton className="h-[80vh] w-full" />
         </div>
       </main>
     )
@@ -48,7 +36,7 @@ export default function Home() {
           className="opacity-20"
         />
         <div className="container px-4 md:px-6 relative z-20">
-          <div className="grid min-h-screen items-center gap-6 lg:grid-cols-2 lg:gap-12">
+          <div className="grid min-h-screen-minus-header items-center gap-6 lg:grid-cols-2 lg:gap-12">
             <div className="flex flex-col justify-center space-y-4">
               <div className="space-y-4">
                 <h1 className="font-headline text-4xl font-bold tracking-tighter text-primary sm:text-5xl md:text-6xl lg:text-7xl">
