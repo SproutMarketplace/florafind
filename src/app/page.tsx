@@ -1,3 +1,9 @@
+
+'use client';
+
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { Skeleton } from '@/components/ui/skeleton';
 import PlantSearch from '@/components/plant-search';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -6,6 +12,29 @@ import Image from 'next/image';
 import Link from 'next/link';
 
 export default function Home() {
+  const router = useRouter();
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+    if (typeof window !== 'undefined') {
+      const hasSeenWelcome = localStorage.getItem('hasSeenWelcome');
+      if (!hasSeenWelcome) {
+        router.replace('/welcome');
+      }
+    }
+  }, [router]);
+
+  if (!isClient) {
+    return (
+      <main className="flex-1">
+        <div className="container px-4 md:px-6 py-12">
+            <Skeleton className="h-screen w-full" />
+        </div>
+      </main>
+    )
+  }
+
   return (
     <main className="flex-1">
       <section className="w-full relative">
