@@ -17,12 +17,20 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      setUser(user);
+    // Only subscribe if auth object is valid (i.e., Firebase is configured)
+    if (auth && Object.keys(auth).length > 0) {
+      const unsubscribe = onAuthStateChanged(auth, (user) => {
+        setUser(user);
+        setLoading(false);
+      });
+      
+      // Cleanup subscription on unmount
+      return () => unsubscribe();
+    } else {
+      // If Firebase is not configured, stop loading and set user to null.
       setLoading(false);
-    });
-
-    return () => unsubscribe();
+      setUser(null);
+    }
   }, []);
 
   return (
@@ -57,5 +65,6 @@ export function withAuth<P extends object>(Component: React.ComponentType<P>) {
     
     return <Component {...props} />;
   };
+  AuthComponent.displayName = `WithAuth(${Component.displayName || Component.name || 'Component'})`;
   return AuthComponent;
 }
