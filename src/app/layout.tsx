@@ -20,7 +20,7 @@ function AppContent({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (typeof window !== 'undefined' && !loading) {
       const hasSeenWelcome = localStorage.getItem('hasSeenWelcome');
-      const isAuthPage = ['/login', '/signup', '/forgot-password'].includes(pathname);
+      const isAuthPage = ['/login', '/signup', '/forgot-password', '/subscribe'].includes(pathname);
       const isWelcomePage = pathname === '/welcome';
 
       // If the user hasn't seen the welcome screen, and they aren't on the welcome
@@ -30,7 +30,7 @@ function AppContent({ children }: { children: React.ReactNode }) {
         router.replace('/welcome');
       }
     }
-  }, [router, pathname, loading]);
+  }, [loading, router, pathname]);
 
   return (
     <>
