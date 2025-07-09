@@ -6,7 +6,7 @@ import './globals.css';
 import { Toaster } from '@/components/ui/toaster';
 import Header from '@/components/layout/header';
 import Footer from '@/components/layout/footer';
-import { AuthProvider } from '@/hooks/use-auth.tsx';
+import { AuthProvider, useAuth } from '@/hooks/use-auth.tsx';
 import { useEffect } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 
@@ -15,18 +15,22 @@ import { usePathname, useRouter } from 'next/navigation';
 function AppContent({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
+  const { user, loading } = useAuth();
 
   useEffect(() => {
-    // Only run this check on the client
-    if (typeof window !== 'undefined') {
+    if (typeof window !== 'undefined' && !loading) {
       const hasSeenWelcome = localStorage.getItem('hasSeenWelcome');
-      
-      // If the user hasn't seen the welcome screen and isn't already on it, redirect them.
-      if (!hasSeenWelcome && pathname !== '/welcome') {
+      const isAuthPage = ['/login', '/signup', '/forgot-password'].includes(pathname);
+      const isWelcomePage = pathname === '/welcome';
+
+      // If the user hasn't seen the welcome screen, and they aren't on the welcome
+      // screen itself or an auth page (which they might get to from the welcome screen),
+      // redirect them to the welcome screen.
+      if (!hasSeenWelcome && !isWelcomePage && !isAuthPage) {
         router.replace('/welcome');
       }
     }
-  }, [router, pathname]);
+  }, [router, pathname, loading, user]);
 
   return (
     <>
