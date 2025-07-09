@@ -1,5 +1,5 @@
-import { initializeApp, getApps } from "firebase/app";
-import { getAuth } from "firebase/auth";
+import { initializeApp, getApps, getApp, FirebaseApp } from "firebase/app";
+import { getAuth, Auth } from "firebase/auth";
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -11,9 +11,19 @@ const firebaseConfig = {
 };
 
 // Initialize Firebase
-const apps = getApps();
-const app = apps.length ? apps[0] : initializeApp(firebaseConfig);
+let app: FirebaseApp;
+let auth: Auth;
 
-const auth = getAuth(app);
+if (firebaseConfig.apiKey) {
+    app = getApps().length ? getApp() : initializeApp(firebaseConfig);
+    auth = getAuth(app);
+} else {
+    // Provide a mock or no-op implementation if Firebase is not configured.
+    // This prevents the app from crashing during development if keys are missing.
+    console.warn("Firebase config is missing, Auth is not initialized.");
+    app = {} as FirebaseApp; 
+    auth = {} as Auth;
+}
+
 
 export { app, auth };
