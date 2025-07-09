@@ -45,9 +45,9 @@ export default function SignupForm() {
       await createUserWithEmailAndPassword(auth, values.email, values.password);
       toast({
         title: 'Account Created',
-        description: "Welcome to FloraFind! You've been signed in.",
+        description: "Welcome to FloraFind! Let's get you set up.",
       });
-      router.push('/');
+      router.push('/subscribe');
     } catch (error: any) {
       toast({
         variant: 'destructive',

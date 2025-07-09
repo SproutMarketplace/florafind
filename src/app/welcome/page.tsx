@@ -62,7 +62,7 @@ export default function WelcomePage() {
       api?.scrollNext();
     } else {
       localStorage.setItem('hasSeenWelcome', 'true');
-      router.push('/');
+      router.push('/signup');
     }
   };
 
