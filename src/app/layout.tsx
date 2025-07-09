@@ -15,7 +15,7 @@ import { usePathname, useRouter } from 'next/navigation';
 function AppContent({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
-  const { user, loading } = useAuth();
+  const { loading } = useAuth();
 
   useEffect(() => {
     if (typeof window !== 'undefined' && !loading) {
@@ -30,7 +30,7 @@ function AppContent({ children }: { children: React.ReactNode }) {
         router.replace('/welcome');
       }
     }
-  }, [router, pathname, loading, user]);
+  }, [router, pathname, loading]);
 
   return (
     <>
