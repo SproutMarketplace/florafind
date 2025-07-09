@@ -3,7 +3,6 @@
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { withAuth } from '@/hooks/use-auth.tsx';
 import { CheckCircle, Star } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
@@ -111,4 +110,4 @@ function SubscribePage() {
   );
 }
 
-export default withAuth(SubscribePage);
+export default SubscribePage;
