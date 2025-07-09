@@ -1,3 +1,5 @@
+'use client';
+
 import { Suspense } from 'react';
 import { aggregatePlantData, AggregatePlantDataOutput } from '@/ai/flows/aggregate-plant-data';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -7,6 +9,7 @@ import { notFound } from 'next/navigation';
 import { Skeleton } from '@/components/ui/skeleton';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
+import { withAuth } from '@/hooks/use-auth.tsx';
 
 type PlantProfileProps = {
   params: {
@@ -155,7 +158,7 @@ function LoadingSkeleton() {
     );
 }
 
-export default function PlantProfilePage({ params }: PlantProfileProps) {
+function PlantProfilePage({ params }: PlantProfileProps) {
   return (
     <main className="flex-1 py-12 md:py-16 lg:py-20">
       <div className="container px-4 md:px-6">
@@ -173,3 +176,6 @@ export default function PlantProfilePage({ params }: PlantProfileProps) {
     </main>
   );
 }
+
+
+export default withAuth(PlantProfilePage);

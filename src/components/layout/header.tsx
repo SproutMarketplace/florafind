@@ -1,6 +1,8 @@
 import Link from 'next/link';
 import { Leaf } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import UserNav from '@/components/auth/user-nav';
+import AuthButtons from '@/components/auth/auth-buttons';
+import { Suspense } from 'react';
 
 export default function Header() {
   return (
@@ -15,12 +17,10 @@ export default function Header() {
           </Link>
         </div>
         <nav className="flex flex-1 items-center justify-end space-x-2">
-           <Button variant="ghost" asChild>
-              <Link href="/#">Search</Link>
-            </Button>
-            <Button variant="ghost" asChild>
-              <Link href="/scan">Scan</Link>
-            </Button>
+            <Suspense fallback={null}>
+                <UserNav />
+                <AuthButtons />
+            </Suspense>
         </nav>
       </div>
     </header>

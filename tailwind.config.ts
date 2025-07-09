@@ -16,6 +16,9 @@ export default {
       },
     },
     extend: {
+      minHeight: {
+        'screen-minus-header': 'calc(100vh - 57px)',
+      },
       fontFamily: {
         body: ['Alegreya', 'serif'],
         headline: ['Alegreya', 'serif'],

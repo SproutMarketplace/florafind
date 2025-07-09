@@ -1,9 +1,12 @@
+'use client';
+
 import PlantScanner from '@/components/plant-scanner';
 import { Button } from '@/components/ui/button';
+import { withAuth } from '@/hooks/use-auth.tsx';
 import { ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 
-export default function ScanPage() {
+function ScanPage() {
     return (
         <main className="flex-1 py-12 md:py-16 lg:py-20">
             <div className="container px-4 md:px-6">
@@ -27,3 +30,5 @@ export default function ScanPage() {
         </main>
     );
 }
+
+export default withAuth(ScanPage);

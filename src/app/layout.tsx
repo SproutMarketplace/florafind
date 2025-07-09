@@ -3,6 +3,7 @@ import './globals.css';
 import { Toaster } from '@/components/ui/toaster';
 import Header from '@/components/layout/header';
 import Footer from '@/components/layout/footer';
+import { AuthProvider } from '@/hooks/use-auth.tsx';
 
 export const metadata: Metadata = {
   title: 'FloraFind',
@@ -25,10 +26,12 @@ export default function RootLayout({
         />
       </head>
       <body className="font-body antialiased h-full flex flex-col bg-background">
-        <Header />
-        {children}
-        <Footer />
-        <Toaster />
+        <AuthProvider>
+          <Header />
+          {children}
+          <Footer />
+          <Toaster />
+        </AuthProvider>
       </body>
     </html>
   );
