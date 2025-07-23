@@ -1,7 +1,7 @@
-// src/app/plant/[name]/page.tsx
+
 'use client';
 
-import { Suspense, useEffect, useState } from 'react';
+import { Suspense, useEffect, useState, use } from 'react';
 import { aggregatePlantData, AggregatePlantDataOutput } from '@/ai/flows/aggregate-plant-data';
 import { generatePlantImage } from '@/ai/flows/generate-plant-image';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -20,6 +20,7 @@ type PlantProfileProps = {
 
 function PlantImage({ plantName }: { plantName: string }) {
   const [imageUrl, setImageUrl] = useState<string | null>(null);
+  const [imageError, setImageError] = useState(false);
 
   useEffect(() => {
     async function fetchImage() {
@@ -28,12 +29,26 @@ function PlantImage({ plantName }: { plantName: string }) {
         setImageUrl(result.imageUrl);
       } catch (error) {
         console.error('Failed to generate plant image:', error);
-        // Fallback to a placeholder if image generation fails
-        setImageUrl('https://placehold.co/600x600.png');
+        setImageError(true);
       }
     }
-    fetchImage();
+    if (plantName) {
+      fetchImage();
+    }
   }, [plantName]);
+
+  if (imageError) {
+    return (
+       <Image
+          src="https://placehold.co/600x600.png"
+          alt={`Placeholder for ${plantName}`}
+          width={600}
+          height={600}
+          data-ai-hint="plant image"
+          className="object-cover w-full aspect-square"
+        />
+    )
+  }
 
   if (!imageUrl) {
     return <Skeleton className="w-full aspect-square" />;
@@ -45,7 +60,6 @@ function PlantImage({ plantName }: { plantName: string }) {
       alt={`Image of ${plantName}`}
       width={600}
       height={600}
-      data-ai-hint="plant image"
       className="object-cover w-full aspect-square"
     />
   );
@@ -54,8 +68,9 @@ function PlantImage({ plantName }: { plantName: string }) {
 
 async function PlantData({ plantName }: { plantName: string }) {
   let data: AggregatePlantDataOutput;
+  const decodedPlantName = decodeURIComponent(plantName);
   try {
-    data = await aggregatePlantData({ plantName: decodeURIComponent(plantName) });
+    data = await aggregatePlantData({ plantName: decodedPlantName });
   } catch (error) {
     console.error('Failed to fetch plant data:', error);
     // Assuming error means not found for this app's purpose
@@ -65,8 +80,6 @@ async function PlantData({ plantName }: { plantName: string }) {
   if (!data || !data.profile) {
     return notFound();
   }
-
-  const decodedPlantName = decodeURIComponent(plantName);
 
   return (
     <div className="grid gap-8 lg:grid-cols-3 items-start">
@@ -188,7 +201,7 @@ function LoadingSkeleton() {
   );
 }
 
-function PlantProfilePage({ params }: PlantProfileProps) {
+export default function PlantProfilePage({ params }: PlantProfileProps) {
   return (
     <main className="flex-1 py-12 md:py-16 lg:py-20">
       <div className="container px-4 md:px-6">
@@ -206,6 +219,3 @@ function PlantProfilePage({ params }: PlantProfileProps) {
     </main>
   );
 }
-
-
-export default PlantProfilePage;
