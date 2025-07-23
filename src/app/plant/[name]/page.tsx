@@ -1,7 +1,7 @@
 
 'use client';
 
-import { Suspense, useEffect, useState, use } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import { aggregatePlantData, AggregatePlantDataOutput } from '@/ai/flows/aggregate-plant-data';
 import { generatePlantImage } from '@/ai/flows/generate-plant-image';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -201,6 +201,7 @@ function LoadingSkeleton() {
   );
 }
 
+// The main page component is now a Server Component.
 export default function PlantProfilePage({ params }: PlantProfileProps) {
   return (
     <main className="flex-1 py-12 md:py-16 lg:py-20">
