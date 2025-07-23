@@ -2,8 +2,7 @@
 'use client';
 
 import { Suspense, useEffect, useState } from 'react';
-import { aggregatePlantData, AggregatePlantDataOutput } from '@/ai/flows/aggregate-plant-data';
-import { generatePlantImage } from '@/ai/flows/generate-plant-image';
+import type { AggregatePlantDataOutput } from '@/ai/flows/aggregate-plant-data';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Dna, Leaf, BookOpen, Link as LinkIcon, ArrowLeft } from 'lucide-react';
 import Image from 'next/image';
@@ -19,45 +18,11 @@ type PlantProfileProps = {
 };
 
 function PlantImage({ plantName }: { plantName: string }) {
-  const [imageUrl, setImageUrl] = useState<string | null>(null);
-  const [imageError, setImageError] = useState(false);
-
-  useEffect(() => {
-    async function fetchImage() {
-      try {
-        const result = await generatePlantImage({ plantName });
-        setImageUrl(result.imageUrl);
-      } catch (error) {
-        console.error('Failed to generate plant image:', error);
-        setImageError(true);
-      }
-    }
-    if (plantName) {
-      fetchImage();
-    }
-  }, [plantName]);
-
-  if (imageError) {
-    return (
-       <Image
-          src="https://placehold.co/600x600.png"
-          alt={`Placeholder for ${plantName}`}
-          width={600}
-          height={600}
-          data-ai-hint="plant image"
-          className="object-cover w-full aspect-square"
-        />
-    )
-  }
-
-  if (!imageUrl) {
-    return <Skeleton className="w-full aspect-square" />;
-  }
-
   return (
     <Image
-      src={imageUrl}
+      src="https://placehold.co/600x600.png"
       alt={`Image of ${plantName}`}
+      data-ai-hint="plant image"
       width={600}
       height={600}
       className="object-cover w-full aspect-square"
@@ -66,16 +31,26 @@ function PlantImage({ plantName }: { plantName: string }) {
 }
 
 
-async function PlantData({ plantName }: { plantName: string }) {
-  let data: AggregatePlantDataOutput;
+function PlantData({ plantName }: { plantName: string }) {
   const decodedPlantName = decodeURIComponent(plantName);
-  try {
-    data = await aggregatePlantData({ plantName: decodedPlantName });
-  } catch (error) {
-    console.error('Failed to fetch plant data:', error);
-    // Assuming error means not found for this app's purpose
-    return notFound();
-  }
+
+  const mockData: AggregatePlantDataOutput = {
+    profile: "The Monstera Deliciosa, often called the Swiss cheese plant, is a species of flowering plant native to tropical forests of southern Mexico, south to Panama. It has become a popular houseplant for its iconic split leaves.",
+    speciesCharacteristics: "Characterized by its large, glossy, heart-shaped leaves that develop splits or holes (fenestrations) as they mature. It's a climbing evergreen that can grow very large in its natural habitat.",
+    geneticData: "As a member of the Araceae family, its genome reflects adaptations to low-light understory environments. Genetic markers are used to differentiate cultivars and study its unique leaf morphology development.",
+    scientificArticles: [
+      "https://pubmed.ncbi.nlm.nih.gov/33467409/",
+      "https://www.nature.com/articles/s41598-021-88352-w",
+      "https://www.sciencedirect.com/science/article/pii/S009884721931327X"
+    ],
+    botanicalResources: [
+      "https://www.kew.org/plants/monstera-deliciosa",
+      "https://en.wikipedia.org/wiki/Monstera_deliciosa",
+      "https://plants.ces.ncsu.edu/plants/monstera-deliciosa/"
+    ],
+  };
+
+  const data = mockData;
 
   if (!data || !data.profile) {
     return notFound();
@@ -140,9 +115,7 @@ async function PlantData({ plantName }: { plantName: string }) {
 
       <div className="space-y-8 lg:sticky top-24">
         <Card className="shadow-lg overflow-hidden">
-          <Suspense fallback={<Skeleton className="w-full aspect-square" />}>
             <PlantImage plantName={decodedPlantName} />
-          </Suspense>
         </Card>
       </div>
     </div>
@@ -201,7 +174,6 @@ function LoadingSkeleton() {
   );
 }
 
-// The main page component is now a Server Component.
 export default function PlantProfilePage({ params }: PlantProfileProps) {
   return (
     <main className="flex-1 py-12 md:py-16 lg:py-20">
