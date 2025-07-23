@@ -25,8 +25,8 @@ function PlantImage({ plantName }: { plantName: string }) {
   useEffect(() => {
     async function fetchImage() {
       try {
-        const response = await generatePlantImage({ plantName });
-        setImageUrl(response.imageUrl);
+        // For now, we'll just use a placeholder
+        setImageUrl('https://placehold.co/600x600.png');
       } catch (error) {
         console.error('Failed to generate plant image:', error);
         // Fallback to a placeholder if image generation fails
@@ -46,6 +46,7 @@ function PlantImage({ plantName }: { plantName: string }) {
       alt={`Image of ${plantName}`}
       width={600}
       height={600}
+      data-ai-hint="plant image"
       className="object-cover w-full aspect-square"
     />
   );
