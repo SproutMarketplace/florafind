@@ -11,6 +11,22 @@
 
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
+import { searchPubMed } from '@/services/pubmed';
+
+const getScientificArticles = ai.defineTool(
+  {
+    name: 'getScientificArticles',
+    description: 'Retrieves a list of scientific articles about a specific plant from PubMed.',
+    inputSchema: z.object({
+      plantName: z.string().describe('The common or scientific name of the plant.'),
+    }),
+    outputSchema: z.array(z.string()),
+  },
+  async (input) => {
+    return await searchPubMed(input.plantName);
+  }
+);
+
 
 const AggregatePlantDataInputSchema = z.object({
   plantName: z.string().describe('The common or scientific name of the plant to search for.'),
@@ -25,7 +41,7 @@ export type AggregatePlantDataInput = z.infer<typeof AggregatePlantDataInputSche
 
 const AggregatePlantDataOutputSchema = z.object({
   profile: z.string().describe('A comprehensive profile of the plant, including genetic data, taxonomic classification, scientific articles, and other relevant information.'),
-  scientificArticles: z.array(z.string()).describe('A list of relevant scientific articles about the plant.'),
+  scientificArticles: z.array(z.string()).describe('A list of relevant scientific articles about the plant from PubMed.'),
   botanicalResources: z.array(z.string()).describe('A list of links to botanical resources about the plant.'),
   geneticData: z.string().describe('A summary of the plant genetic data'),
   speciesCharacteristics: z.string().describe('Details on species characteristics'),
@@ -40,16 +56,20 @@ const aggregatePlantDataPrompt = ai.definePrompt({
   name: 'aggregatePlantDataPrompt',
   input: {schema: AggregatePlantDataInputSchema},
   output: {schema: AggregatePlantDataOutputSchema},
-  prompt: `You are an AI assistant specializing in botany.  Aggregate plant information from multiple online databases, scientific articles, and botanical resources to provide a comprehensive plant profile.
+  tools: [getScientificArticles],
+  prompt: `You are an AI assistant specializing in botany. Your task is to aggregate comprehensive information about a specific plant.
+
+  First, use the provided tools to gather scientific articles about the plant.
+  Then, using your own knowledge and the gathered information, generate the rest of the plant's profile.
 
   Plant Name: {{{plantName}}}
   {{#if photoDataUri}}
   Plant Photo: {{media url=photoDataUri}}
   {{/if}}
 
-  Provide the plant profile, scientific articles, botanical resources, genetic data, and species characteristics.
+  Provide the plant profile, a list of scientific articles (which you MUST get from the provided tool), other botanical resources, genetic data, and species characteristics.
   Ensure that the profile includes genetic data, taxonomic classification, and species characteristics.
-  Return direct links to original data sources, scientific articles, and other relevant botanical resources.
+  Return direct links to original data sources for botanical resources.
 `,
 });
 
