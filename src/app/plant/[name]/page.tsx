@@ -1,8 +1,6 @@
 
 
-'use client';
-
-import { Suspense, useEffect, useState } from 'react';
+import { Suspense } from 'react';
 import type { AggregatePlantDataOutput } from '@/ai/flows/aggregate-plant-data';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Dna, Leaf, BookOpen, Link as LinkIcon, ArrowLeft } from 'lucide-react';
