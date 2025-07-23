@@ -11,7 +11,6 @@ import { notFound } from 'next/navigation';
 import { Skeleton } from '@/components/ui/skeleton';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { withAuth } from '@/hooks/use-auth.tsx';
 
 type PlantProfileProps = {
   params: {
@@ -25,8 +24,8 @@ function PlantImage({ plantName }: { plantName: string }) {
   useEffect(() => {
     async function fetchImage() {
       try {
-        // For now, we'll just use a placeholder
-        setImageUrl('https://placehold.co/600x600.png');
+        const result = await generatePlantImage({ plantName });
+        setImageUrl(result.imageUrl);
       } catch (error) {
         console.error('Failed to generate plant image:', error);
         // Fallback to a placeholder if image generation fails
@@ -209,4 +208,4 @@ function PlantProfilePage({ params }: PlantProfileProps) {
 }
 
 
-export default withAuth(PlantProfilePage);
+export default PlantProfilePage;
