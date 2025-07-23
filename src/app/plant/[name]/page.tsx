@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { Suspense, useEffect, useState } from 'react';
@@ -10,6 +11,8 @@ import { notFound } from 'next/navigation';
 import { Skeleton } from '@/components/ui/skeleton';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Badge } from '@/components/ui/badge';
 
 type PlantProfileProps = {
   params: {
@@ -19,14 +22,16 @@ type PlantProfileProps = {
 
 function PlantImage({ plantName }: { plantName: string }) {
   return (
-    <Image
-      src="https://placehold.co/600x600.png"
-      alt={`Image of ${plantName}`}
-      data-ai-hint="plant image"
-      width={600}
-      height={600}
-      className="object-cover w-full aspect-square"
-    />
+    <div className="relative w-full h-64 md:h-80 lg:h-96">
+      <Image
+        src="https://placehold.co/1200x400.png"
+        alt={`Image of ${plantName}`}
+        data-ai-hint="plant image"
+        layout="fill"
+        objectFit="cover"
+        className="rounded-t-lg"
+      />
+    </div>
   );
 }
 
@@ -34,7 +39,7 @@ function PlantImage({ plantName }: { plantName: string }) {
 function PlantData({ plantName }: { plantName: string }) {
   const decodedPlantName = decodeURIComponent(plantName);
 
-  const mockData: AggregatePlantDataOutput = {
+  const mockData: AggregatePlantDataOutput & { family: string } = {
     profile: "The Monstera Deliciosa, often called the Swiss cheese plant, is a species of flowering plant native to tropical forests of southern Mexico, south to Panama. It has become a popular houseplant for its iconic split leaves.",
     speciesCharacteristics: "Characterized by its large, glossy, heart-shaped leaves that develop splits or holes (fenestrations) as they mature. It's a climbing evergreen that can grow very large in its natural habitat.",
     geneticData: "As a member of the Araceae family, its genome reflects adaptations to low-light understory environments. Genetic markers are used to differentiate cultivars and study its unique leaf morphology development.",
@@ -48,6 +53,7 @@ function PlantData({ plantName }: { plantName: string }) {
       "https://en.wikipedia.org/wiki/Monstera_deliciosa",
       "https://plants.ces.ncsu.edu/plants/monstera-deliciosa/"
     ],
+    family: 'Araceae',
   };
 
   const data = mockData;
@@ -57,117 +63,108 @@ function PlantData({ plantName }: { plantName: string }) {
   }
 
   return (
-    <div className="grid gap-8 lg:grid-cols-3 items-start">
-      <div className="lg:col-span-2 space-y-8">
-        <Card className="shadow-lg">
-          <CardHeader>
-            <CardTitle className="font-headline text-4xl capitalize text-primary">{decodedPlantName}</CardTitle>
-            <CardDescription className="text-lg pt-2">{data.profile}</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-8 mt-4">
-              <div className="space-y-3">
-                <h3 className="text-xl font-headline flex items-center gap-2"><Leaf className="w-5 h-5 text-primary" />Species Characteristics</h3>
-                <p className="text-foreground/80 leading-relaxed">{data.speciesCharacteristics}</p>
-              </div>
-              <div className="space-y-3">
-                <h3 className="text-xl font-headline flex items-center gap-2"><Dna className="w-5 h-5 text-primary" />Genetic Data</h3>
-                <p className="text-foreground/80 leading-relaxed">{data.geneticData}</p>
-              </div>
+    <div className="flex flex-col gap-8">
+      <Card className="shadow-lg overflow-hidden">
+        <PlantImage plantName={decodedPlantName} />
+        <CardHeader>
+          <CardTitle className="font-headline text-4xl capitalize text-primary">{decodedPlantName}</CardTitle>
+          <CardDescription className="text-lg pt-2">{data.profile}</CardDescription>
+        </CardHeader>
+        <CardContent>
+            <div className="flex gap-2">
+                <Badge variant="secondary" className="cursor-pointer hover:bg-accent">
+                    {data.family}
+                </Badge>
             </div>
-          </CardContent>
-        </Card>
+        </CardContent>
+      </Card>
 
-        <Card className="shadow-lg">
-          <CardHeader>
-            <CardTitle className="font-headline flex items-center gap-2"><BookOpen className="w-5 h-5 text-primary" />Scientific Articles</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <ul className="space-y-3">
-              {data.scientificArticles.map((article, index) => (
-                <li key={index}>
-                  <a href={article} target="_blank" rel="noopener noreferrer" className="text-primary/80 hover:text-primary hover:underline flex items-start gap-2 transition-colors">
-                    <LinkIcon className="w-4 h-4 mt-1 shrink-0" /> <span className="break-all">{article}</span>
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </CardContent>
-        </Card>
-
-        <Card className="shadow-lg">
-          <CardHeader>
-            <CardTitle className="font-headline flex items-center gap-2"><LinkIcon className="w-5 h-5 text-primary" />Botanical Resources</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <ul className="space-y-3">
-              {data.botanicalResources.map((resource, index) => (
-                <li key={index}>
-                  <a href={resource} target="_blank" rel="noopener noreferrer" className="text-primary/80 hover:text-primary hover:underline flex items-start gap-2 transition-colors">
-                    <LinkIcon className="w-4 h-4 mt-1 shrink-0" /> <span className="break-all">{resource}</span>
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </CardContent>
-        </Card>
-      </div>
-
-      <div className="space-y-8 lg:sticky top-24">
-        <Card className="shadow-lg overflow-hidden">
-            <PlantImage plantName={decodedPlantName} />
-        </Card>
-      </div>
+      <Tabs defaultValue="articles" className="w-full">
+        <TabsList className="grid w-full grid-cols-3">
+          <TabsTrigger value="articles">
+            <BookOpen className="mr-2 h-4 w-4" />
+            Scientific Articles
+          </TabsTrigger>
+          <TabsTrigger value="resources">
+            <LinkIcon className="mr-2 h-4 w-4" />
+            Botanical Resources
+          </TabsTrigger>
+          <TabsTrigger value="data">
+            <Dna className="mr-2 h-4 w-4" />
+            Genetic Data
+          </TabsTrigger>
+        </TabsList>
+        <TabsContent value="articles">
+          <Card className="shadow-lg">
+            <CardContent className="pt-6">
+              <ul className="space-y-3">
+                {data.scientificArticles.map((article, index) => (
+                  <li key={index}>
+                    <a href={article} target="_blank" rel="noopener noreferrer" className="text-primary/80 hover:text-primary hover:underline flex items-start gap-2 transition-colors">
+                      <LinkIcon className="w-4 h-4 mt-1 shrink-0" /> <span className="break-all">{article}</span>
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </CardContent>
+          </Card>
+        </TabsContent>
+        <TabsContent value="resources">
+          <Card className="shadow-lg">
+             <CardContent className="pt-6">
+              <ul className="space-y-3">
+                {data.botanicalResources.map((resource, index) => (
+                  <li key={index}>
+                    <a href={resource} target="_blank" rel="noopener noreferrer" className="text-primary/80 hover:text-primary hover:underline flex items-start gap-2 transition-colors">
+                      <LinkIcon className="w-4 h-4 mt-1 shrink-0" /> <span className="break-all">{resource}</span>
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </CardContent>
+          </Card>
+        </TabsContent>
+        <TabsContent value="data">
+          <Card className="shadow-lg">
+            <CardContent className="pt-6 space-y-6">
+                <div className="space-y-3">
+                    <h3 className="text-xl font-headline flex items-center gap-2"><Dna className="w-5 h-5 text-primary" />Genetic Data</h3>
+                    <p className="text-foreground/80 leading-relaxed">{data.geneticData}</p>
+                </div>
+                <div className="space-y-3">
+                    <h3 className="text-xl font-headline flex items-center gap-2"><Leaf className="w-5 h-5 text-primary" />Species Characteristics</h3>
+                    <p className="text-foreground/80 leading-relaxed">{data.speciesCharacteristics}</p>
+                </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }
 
 function LoadingSkeleton() {
   return (
-    <div className="grid gap-8 lg:grid-cols-3 items-start">
-      <div className="lg:col-span-2 space-y-8">
+    <div className="space-y-8">
+      <Card>
+        <Skeleton className="h-80 w-full rounded-t-lg" />
+        <CardHeader>
+          <Skeleton className="h-10 w-3/4" />
+          <Skeleton className="h-6 w-full mt-4" />
+          <Skeleton className="h-6 w-5/6 mt-2" />
+        </CardHeader>
+        <CardContent>
+           <Skeleton className="h-8 w-24" />
+        </CardContent>
+      </Card>
+      <div className="space-y-4">
+        <Skeleton className="h-12 w-full" />
         <Card>
-          <CardHeader>
-            <Skeleton className="h-10 w-3/4" />
-            <Skeleton className="h-6 w-full mt-4" />
-            <Skeleton className="h-6 w-5/6 mt-2" />
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
-              <div className="space-y-4">
-                <Skeleton className="h-8 w-1/2" />
-                <Skeleton className="h-5 w-full" />
-                <Skeleton className="h-5 w-full" />
-                <Skeleton className="h-5 w-4/5" />
-              </div>
-              <div className="space-y-4">
-                <Skeleton className="h-8 w-1/2" />
-                <Skeleton className="h-5 w-full" />
-                <Skeleton className="h-5 w-full" />
-                <Skeleton className="h-5 w-4/5" />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader><Skeleton className="h-8 w-1/3" /></CardHeader>
-          <CardContent className="space-y-3">
-            <Skeleton className="h-5 w-full" />
-            <Skeleton className="h-5 w-full" />
-            <Skeleton className="h-5 w-5/6" />
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader><Skeleton className="h-8 w-1/3" /></CardHeader>
-          <CardContent className="space-y-3">
-            <Skeleton className="h-5 w-full" />
-            <Skeleton className="h-5 w-5/6" />
-          </CardContent>
-        </Card>
-      </div>
-      <div className="lg:sticky top-24">
-        <Card>
-          <Skeleton className="w-full aspect-square" />
+            <CardContent className="pt-6 space-y-4">
+                 <Skeleton className="h-5 w-full" />
+                 <Skeleton className="h-5 w-full" />
+                 <Skeleton className="h-5 w-5/6" />
+            </CardContent>
         </Card>
       </div>
     </div>
